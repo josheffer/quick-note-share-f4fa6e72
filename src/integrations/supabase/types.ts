@@ -9,13 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      notes: {
+        Row: {
+          content: string
+          created_at: string | null
+          edit_code: string
+          id: string
+          is_markdown: boolean | null
+          is_public: boolean | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          edit_code: string
+          id?: string
+          is_markdown?: boolean | null
+          is_public?: boolean | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          edit_code?: string
+          id?: string
+          is_markdown?: boolean | null
+          is_public?: boolean | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_views: {
+        Args: { note_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
