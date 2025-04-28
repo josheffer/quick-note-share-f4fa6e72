@@ -29,8 +29,28 @@ export function NoteEditor({
   const [isMarkdown, setIsMarkdown] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [slugError, setSlugError] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const validateSlug = (value: string) => {
+    if (!value) return true;
+    
+    // Verifica se o slug está no formato correto (apenas letras, números e hífens)
+    const slugRegex = /^[a-z0-9-]+$/;
+    return slugRegex.test(value);
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setSlug(value);
+    
+    if (value && !validateSlug(value)) {
+      setSlugError("Slug inválido. Use apenas letras minúsculas, números e hífens.");
+    } else {
+      setSlugError("");
+    }
+  };
 
   const handleFormat = (format: string) => {
     const textarea = document.querySelector('textarea');
@@ -71,18 +91,51 @@ export function NoteEditor({
       return;
     }
 
+    if (slug && !validateSlug(slug)) {
+      toast({
+        title: "Erro",
+        description: "Slug inválido. Use apenas letras minúsculas, números e hífens.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsPublishing(true);
 
     try {
       const newEditCode = editMode ? editCode : Math.random().toString(36).substring(2, 8);
+      const formattedSlug = slug ? slug.toLowerCase().replace(/[^a-z0-9-]/g, '-') : null;
+      
       const noteData = {
         content,
         is_markdown: isMarkdown,
         edit_code: newEditCode,
-        ...(slug && { slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, '-') })
+        slug: formattedSlug
       };
       
       if (editMode && existingNoteId) {
+        // Verificar se o slug já existe (exceto para a nota atual)
+        if (formattedSlug) {
+          const { data: existingNote, error: checkError } = await supabase
+            .from('notes')
+            .select('id')
+            .eq('slug', formattedSlug)
+            .neq('id', existingNoteId)
+            .maybeSingle();
+          
+          if (checkError) throw checkError;
+          
+          if (existingNote) {
+            toast({
+              title: "Erro",
+              description: "Este slug já está em uso. Por favor, escolha outro.",
+              variant: "destructive",
+            });
+            setIsPublishing(false);
+            return;
+          }
+        }
+        
         const { error } = await supabase
           .from('notes')
           .update({
@@ -94,6 +147,27 @@ export function NoteEditor({
 
         if (error) throw error;
       } else {
+        // Verificar se o slug já existe
+        if (formattedSlug) {
+          const { data: existingNote, error: checkError } = await supabase
+            .from('notes')
+            .select('id')
+            .eq('slug', formattedSlug)
+            .maybeSingle();
+          
+          if (checkError) throw checkError;
+          
+          if (existingNote) {
+            toast({
+              title: "Erro",
+              description: "Este slug já está em uso. Por favor, escolha outro.",
+              variant: "destructive",
+            });
+            setIsPublishing(false);
+            return;
+          }
+        }
+        
         const { data, error } = await supabase
           .from('notes')
           .insert(noteData)
@@ -121,10 +195,11 @@ export function NoteEditor({
       } else {
         navigate(`/p/${existingNoteId}`);
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erro ao salvar nota:", error);
       toast({
         title: "Erro",
-        description: "Houve um problema ao publicar sua nota. Por favor, tente novamente.",
+        description: `Houve um problema ao publicar sua nota: ${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -161,15 +236,18 @@ export function NoteEditor({
       </div>
 
       {!editMode && (
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="slug">URL Personalizada (opcional)</Label>
-          <Input
-            id="slug"
-            placeholder="minha-nota"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="max-w-xs"
-          />
+        <div className="flex flex-col space-y-1">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="slug">URL Personalizada (opcional)</Label>
+            <Input
+              id="slug"
+              placeholder="minha-nota"
+              value={slug}
+              onChange={handleSlugChange}
+              className={`max-w-xs ${slugError ? 'border-red-500' : ''}`}
+            />
+          </div>
+          {slugError && <p className="text-red-500 text-sm">{slugError}</p>}
         </div>
       )}
 
@@ -199,7 +277,7 @@ export function NoteEditor({
         </Button>
         <Button 
           onClick={handleSubmit} 
-          disabled={isPublishing}
+          disabled={isPublishing || !!slugError}
           className="min-w-[120px]"
         >
           {isPublishing ? "Publicando..." : editMode ? "Atualizar" : "Publicar"}

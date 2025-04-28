@@ -11,6 +11,10 @@ import Edit from "./pages/Edit";
 import Note from "./pages/Note";
 import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/admin/Login";
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import AdminNotes from "./pages/admin/Notes";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +32,15 @@ const App = () => (
             <Route path="/p/:noteId" element={<Note />} />
             <Route path="/success/:noteId" element={<Success />} />
           </Route>
+          
+          {/* Rotas administrativas */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="notes" element={<AdminNotes />} />
+            {/* Outras rotas do painel admin serão adicionadas aqui */}
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

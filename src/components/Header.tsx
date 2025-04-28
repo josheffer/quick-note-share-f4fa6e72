@@ -15,6 +15,9 @@ export function Header() {
           <Button variant="ghost" asChild>
             <Link to="/new">Nova Nota</Link>
           </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/admin/login">Painel</Link>
+          </Button>
           <ThemeToggle />
         </div>
       </div>
