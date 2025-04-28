@@ -9,7 +9,11 @@ import {
   List, 
   Link, 
   Heading1, 
-  Heading2 
+  Heading2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Table
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -19,15 +23,19 @@ interface EditorToolbarProps {
 
 export function EditorToolbar({ onFormatClick }: EditorToolbarProps) {
   const tools = [
-    { icon: Bold, label: "Bold", format: "**" },
-    { icon: Italic, label: "Italic", format: "*" },
-    { icon: Strikethrough, label: "Strikethrough", format: "~~" },
-    { icon: Code, label: "Code", format: "`" },
-    { icon: Quote, label: "Quote", format: "> " },
-    { icon: List, label: "List", format: "- " },
-    { icon: Heading1, label: "Heading 1", format: "# " },
-    { icon: Heading2, label: "Heading 2", format: "## " },
-    { icon: Link, label: "Link", format: "[](url)" }
+    { icon: Bold, label: "Negrito", format: "**" },
+    { icon: Italic, label: "Itálico", format: "*" },
+    { icon: Strikethrough, label: "Tachado", format: "~~" },
+    { icon: Code, label: "Código", format: "`" },
+    { icon: Quote, label: "Citação", format: "> " },
+    { icon: List, label: "Lista", format: "- " },
+    { icon: Heading1, label: "Título 1", format: "# " },
+    { icon: Heading2, label: "Título 2", format: "## " },
+    { icon: Link, label: "Link", format: "[](url)" },
+    { icon: AlignLeft, label: "Alinhar à Esquerda", format: "::: left\n" },
+    { icon: AlignCenter, label: "Centralizar", format: "::: center\n" },
+    { icon: AlignRight, label: "Alinhar à Direita", format: "::: right\n" },
+    { icon: Table, label: "Tabela", format: "\n| Coluna 1 | Coluna 2 |\n|----------|----------|\n| Item 1   | Item 2   |\n" }
   ];
 
   return (

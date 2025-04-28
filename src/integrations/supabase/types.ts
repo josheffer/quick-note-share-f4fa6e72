@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          password: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          password: string
+          user_type: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          password?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string
@@ -17,6 +44,8 @@ export type Database = {
           id: string
           is_markdown: boolean | null
           is_public: boolean | null
+          report_status: string | null
+          slug: string | null
           updated_at: string | null
           views: number | null
         }
@@ -27,6 +56,8 @@ export type Database = {
           id?: string
           is_markdown?: boolean | null
           is_public?: boolean | null
+          report_status?: string | null
+          slug?: string | null
           updated_at?: string | null
           views?: number | null
         }
@@ -37,10 +68,50 @@ export type Database = {
           id?: string
           is_markdown?: boolean | null
           is_public?: boolean | null
+          report_status?: string | null
+          slug?: string | null
           updated_at?: string | null
           views?: number | null
         }
         Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          message: string | null
+          note_id: string | null
+          reason: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          message?: string | null
+          note_id?: string | null
+          reason: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string | null
+          note_id?: string | null
+          reason?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

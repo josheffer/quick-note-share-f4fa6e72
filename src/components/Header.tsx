@@ -13,10 +13,7 @@ export function Header() {
         
         <div className="flex items-center space-x-2">
           <Button variant="ghost" asChild>
-            <Link to="/new">New Note</Link>
-          </Button>
-          <Button variant="ghost" asChild>
-            <Link to="/edit">Edit Note</Link>
+            <Link to="/new">Nova Nota</Link>
           </Button>
           <ThemeToggle />
         </div>
