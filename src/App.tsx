@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import AdminLogin from "./pages/admin/Login";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminNotes from "./pages/admin/Notes";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +34,6 @@ const App = () => (
             <Route path="/success/:noteId" element={<Success />} />
           </Route>
           
-          {/* Rotas administrativas */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={
             <ThemeProvider>
@@ -43,7 +42,7 @@ const App = () => (
           }>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="notes" element={<AdminNotes />} />
-            {/* Outras rotas do painel admin serão adicionadas aqui */}
+            <Route path="settings" element={<Settings />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

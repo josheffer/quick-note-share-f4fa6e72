@@ -135,7 +135,14 @@ export default function AdminLogin() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex flex-col space-y-2">
+          <Button 
+            variant="link" 
+            className="text-sm text-muted-foreground"
+            onClick={() => {/* Implementar lógica para abrir modal de recuperação */}}
+          >
+            Esqueceu sua senha?
+          </Button>
           <p className="text-sm text-muted-foreground">
             QuickNoteShare - Área Administrativa
           </p>
