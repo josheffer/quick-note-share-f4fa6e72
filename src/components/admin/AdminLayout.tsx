@@ -28,7 +28,7 @@ type AdminUser = {
 export default function AdminLayout() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { theme, setTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -52,10 +52,6 @@ export default function AdminLayout() {
       description: "Você foi desconectado do painel administrativo.",
     });
     navigate("/admin/login");
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   // Redirecionar para login se não estiver autenticado
