@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 
 interface SmtpSettings {
   smtp_host: string;
-  smtp_port: string; // Mudamos para string para compatibilidade com o Input
+  smtp_port: string; // String type for compatibility with Input component
   smtp_user: string;
   smtp_password: string;
   smtp_sender_name: string;
@@ -44,10 +44,10 @@ export default function Settings() {
         if (error) throw error;
         
         if (data) {
-          // Converter o número para string ao carregar os dados
+          // Convert port number to string when loading data
           form.reset({
             ...data,
-            smtp_port: data.smtp_port?.toString() || ''
+            smtp_port: data.smtp_port !== null ? String(data.smtp_port) : ''
           });
         }
       } catch (error: any) {
@@ -66,7 +66,7 @@ export default function Settings() {
   const onSubmit = async (data: SmtpSettings) => {
     setIsLoading(true);
     try {
-      // Converter a porta de string para número ao salvar
+      // Convert port from string to number when saving
       const portNumber = data.smtp_port ? parseInt(data.smtp_port, 10) : null;
       
       const { error } = await supabase
