@@ -146,7 +146,7 @@ export type Database = {
           id: string
           smtp_host: string | null
           smtp_password: string | null
-          smtp_port: number | null
+          smtp_port: string | null
           smtp_sender_name: string | null
           smtp_use_tls: boolean | null
           smtp_user: string | null
@@ -157,7 +157,7 @@ export type Database = {
           id?: string
           smtp_host?: string | null
           smtp_password?: string | null
-          smtp_port?: number | null
+          smtp_port?: string | null
           smtp_sender_name?: string | null
           smtp_use_tls?: boolean | null
           smtp_user?: string | null
@@ -168,7 +168,7 @@ export type Database = {
           id?: string
           smtp_host?: string | null
           smtp_password?: string | null
-          smtp_port?: number | null
+          smtp_port?: string | null
           smtp_sender_name?: string | null
           smtp_use_tls?: boolean | null
           smtp_user?: string | null

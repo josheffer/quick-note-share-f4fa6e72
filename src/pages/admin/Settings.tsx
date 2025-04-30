@@ -44,10 +44,10 @@ export default function Settings() {
         if (error) throw error;
         
         if (data) {
-          // Convert port number to string when loading data
+          // Load data directly since the column is already text type
           form.reset({
             ...data,
-            smtp_port: data.smtp_port !== null ? String(data.smtp_port) : ''
+            smtp_port: data.smtp_port || ''
           });
         }
       } catch (error: any) {
@@ -66,14 +66,11 @@ export default function Settings() {
   const onSubmit = async (data: SmtpSettings) => {
     setIsLoading(true);
     try {
-      // Convert port from string to number when saving
-      const portNumber = data.smtp_port ? parseInt(data.smtp_port, 10) : null;
-      
+      // No need to convert string to number since the column is now text type
       const { error } = await supabase
         .from('site_settings')
         .update({
-          ...data,
-          smtp_port: portNumber
+          ...data
         })
         .eq('id', 1);
 
@@ -126,7 +123,7 @@ export default function Settings() {
                   <FormItem>
                     <FormLabel>Porta</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="587" {...field} />
+                      <Input placeholder="587" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
