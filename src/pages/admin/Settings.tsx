@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 
 interface SmtpSettings {
   smtp_host: string;
-  smtp_port: number;
+  smtp_port: string; // Mudamos para string para compatibilidade com o Input
   smtp_user: string;
   smtp_password: string;
   smtp_sender_name: string;
@@ -21,14 +21,60 @@ interface SmtpSettings {
 export default function Settings() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const form = useForm<SmtpSettings>();
+  const form = useForm<SmtpSettings>({
+    defaultValues: {
+      smtp_host: '',
+      smtp_port: '',
+      smtp_user: '',
+      smtp_password: '',
+      smtp_sender_name: '',
+      smtp_use_tls: true
+    }
+  });
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (error) throw error;
+        
+        if (data) {
+          // Converter o número para string ao carregar os dados
+          form.reset({
+            ...data,
+            smtp_port: data.smtp_port?.toString() || ''
+          });
+        }
+      } catch (error: any) {
+        console.error('Erro ao carregar configurações:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as configurações",
+          variant: "destructive",
+        });
+      }
+    }
+
+    loadSettings();
+  }, [form, toast]);
 
   const onSubmit = async (data: SmtpSettings) => {
     setIsLoading(true);
     try {
+      // Converter a porta de string para número ao salvar
+      const portNumber = data.smtp_port ? parseInt(data.smtp_port, 10) : null;
+      
       const { error } = await supabase
         .from('site_settings')
-        .update(data)
+        .update({
+          ...data,
+          smtp_port: portNumber
+        })
         .eq('id', 1);
 
       if (error) throw error;
