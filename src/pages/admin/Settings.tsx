@@ -44,7 +44,7 @@ export default function Settings() {
         if (error) throw error;
         
         if (data) {
-          // Load data directly since the column is already text type
+          // Load data directly since the column is text type
           form.reset({
             ...data,
             smtp_port: data.smtp_port || ''
