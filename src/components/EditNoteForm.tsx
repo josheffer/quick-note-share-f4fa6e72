@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { NoteEditor } from "@/components/NoteEditor";
+import { supabase } from "@/integrations/supabase/client";
 
 export function EditNoteForm() {
   const [noteId, setNoteId] = useState("");
@@ -16,10 +17,10 @@ export function EditNoteForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!noteId || !editCode) {
+    if (!noteId) {
       toast({
-        title: "Error",
-        description: "Both note ID and edit code are required",
+        title: "Erro",
+        description: "ID da nota é obrigatório",
         variant: "destructive",
       });
       return;
@@ -28,41 +29,56 @@ export function EditNoteForm() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Verificar se a nota existe
+      const { data: noteData, error: noteError } = await supabase
+        .from('notes')
+        .select('content, edit_code')
+        .eq('id', noteId)
+        .maybeSingle();
       
-      // In a real app, this would verify the edit code against the API
-      const noteData = localStorage.getItem(`note_${noteId}`);
+      if (noteError) throw noteError;
       
       if (!noteData) {
         toast({
-          title: "Note Not Found",
-          description: "We couldn't find a note with that ID.",
+          title: "Nota não encontrada",
+          description: "Não encontramos uma nota com este ID.",
           variant: "destructive",
         });
         return;
       }
 
-      const parsedNote = JSON.parse(noteData);
-      
-      if (parsedNote.editCode !== editCode) {
-        toast({
-          title: "Invalid Edit Code",
-          description: "The edit code you provided is incorrect.",
-          variant: "destructive",
-        });
-        return;
+      // Verificar se a nota tem código de edição
+      if (noteData.edit_code) {
+        // Se a nota tem código de edição, verificar se o código fornecido está correto
+        if (!editCode) {
+          toast({
+            title: "Código de edição necessário",
+            description: "Esta nota requer um código de edição para ser modificada.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (noteData.edit_code !== editCode) {
+          toast({
+            title: "Código inválido",
+            description: "O código de edição fornecido está incorreto.",
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       // Set the note data to edit
-      setNote(parsedNote);
+      setNote(noteData);
       
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "There was a problem retrieving your note. Please try again.",
+        title: "Erro",
+        description: "Houve um problema ao recuperar sua nota. Por favor, tente novamente.",
         variant: "destructive",
       });
+      console.error("Erro ao buscar nota:", error);
     } finally {
       setIsLoading(false);
     }
@@ -74,14 +90,14 @@ export function EditNoteForm() {
 
   return (
     <div className="max-w-md mx-auto py-8 animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6">Edit an Existing Note</h1>
+      <h1 className="text-2xl font-bold mb-6">Editar uma Nota Existente</h1>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="noteId">Note ID</Label>
+          <Label htmlFor="noteId">ID da Nota</Label>
           <Input
             id="noteId"
-            placeholder="Enter the note ID"
+            placeholder="Digite o ID da nota"
             value={noteId}
             onChange={(e) => setNoteId(e.target.value)}
             required
@@ -89,19 +105,18 @@ export function EditNoteForm() {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="editCode">Edit Code</Label>
+          <Label htmlFor="editCode">Código de Edição (opcional para algumas notas)</Label>
           <Input
             id="editCode"
             type="password"
-            placeholder="Enter your edit code"
+            placeholder="Digite seu código de edição, se necessário"
             value={editCode}
             onChange={(e) => setEditCode(e.target.value)}
-            required
           />
         </div>
         
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Verifying..." : "Continue to Edit"}
+          {isLoading ? "Verificando..." : "Continuar para Edição"}
         </Button>
       </form>
     </div>

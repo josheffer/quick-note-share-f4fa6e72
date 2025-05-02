@@ -26,6 +26,8 @@ export function NoteEditor({
 }: NoteEditorProps) {
   const [content, setContent] = useState(initialContent);
   const [slug, setSlug] = useState("");
+  const [customEditCode, setCustomEditCode] = useState("");
+  const [useCustomEditCode, setUseCustomEditCode] = useState(false);
   const [isMarkdown, setIsMarkdown] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
@@ -103,13 +105,19 @@ export function NoteEditor({
     setIsPublishing(true);
 
     try {
-      const newEditCode = editMode ? editCode : Math.random().toString(36).substring(2, 8);
+      // Use editCode if in edit mode, otherwise use custom edit code if enabled, or null if not enabled
+      const finalEditCode = editMode 
+        ? editCode 
+        : useCustomEditCode 
+          ? customEditCode 
+          : null;
+      
       const formattedSlug = slug ? slug.toLowerCase().replace(/[^a-z0-9-]/g, '-') : null;
       
       const noteData = {
         content,
         is_markdown: isMarkdown,
-        edit_code: newEditCode,
+        edit_code: finalEditCode,
         slug: formattedSlug
       };
       
@@ -182,14 +190,16 @@ export function NoteEditor({
         title: editMode ? "Nota Atualizada!" : "Nota Publicada!",
         description: editMode 
           ? "Sua nota foi atualizada com sucesso." 
-          : "Sua nota foi publicada. Guarde o código de edição!",
+          : useCustomEditCode 
+            ? "Sua nota foi publicada. Guarde o código de edição!"
+            : "Sua nota foi publicada sem código de edição.",
       });
 
       if (!editMode) {
         navigate(`/success/${existingNoteId}`, { 
           state: { 
             noteId: existingNoteId, 
-            editCode: newEditCode 
+            editCode: finalEditCode 
           } 
         });
       } else {
@@ -236,19 +246,46 @@ export function NoteEditor({
       </div>
 
       {!editMode && (
-        <div className="flex flex-col space-y-1">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="slug">URL Personalizada (opcional)</Label>
-            <Input
-              id="slug"
-              placeholder="minha-nota"
-              value={slug}
-              onChange={handleSlugChange}
-              className={`max-w-xs ${slugError ? 'border-red-500' : ''}`}
-            />
+        <>
+          <div className="flex flex-col space-y-1">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="slug">URL Personalizada (opcional)</Label>
+              <Input
+                id="slug"
+                placeholder="minha-nota"
+                value={slug}
+                onChange={handleSlugChange}
+                className={`max-w-xs ${slugError ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {slugError && <p className="text-red-500 text-sm">{slugError}</p>}
           </div>
-          {slugError && <p className="text-red-500 text-sm">{slugError}</p>}
-        </div>
+          
+          <div className="flex flex-col space-y-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <Switch 
+                id="use-edit-code" 
+                checked={useCustomEditCode}
+                onCheckedChange={setUseCustomEditCode}
+              />
+              <Label htmlFor="use-edit-code">Usar código de edição (opcional)</Label>
+            </div>
+            
+            {useCustomEditCode && (
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="edit-code">Código de Edição</Label>
+                <Input
+                  id="edit-code"
+                  type="password"
+                  placeholder="Código para editar esta nota depois"
+                  value={customEditCode}
+                  onChange={(e) => setCustomEditCode(e.target.value)}
+                  className="max-w-xs"
+                />
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {isMarkdown && <EditorToolbar onFormatClick={handleFormat} />}
@@ -277,7 +314,7 @@ export function NoteEditor({
         </Button>
         <Button 
           onClick={handleSubmit} 
-          disabled={isPublishing || !!slugError}
+          disabled={isPublishing || !!slugError || (useCustomEditCode && !customEditCode)}
           className="min-w-[120px]"
         >
           {isPublishing ? "Publicando..." : editMode ? "Atualizar" : "Publicar"}

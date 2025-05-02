@@ -10,8 +10,8 @@ export default function Success() {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Check if we have state data
-  if (!location.state?.noteId || !location.state?.editCode) {
+  // Check if we have noteId in state data
+  if (!location.state?.noteId) {
     return <Navigate to="/" replace />;
   }
 
@@ -56,30 +56,32 @@ export default function Success() {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="edit-code" className="flex items-center">
-              <span>Edit Code</span> 
-              <span className="text-sm text-red-500 ml-1">(Save this somewhere safe!)</span>
-            </Label>
-            <div className="flex mt-1.5">
-              <Input
-                id="edit-code"
-                value={editCode}
-                type="password"
-                readOnly
-                className="flex-1"
-              />
-              <Button 
-                className="ml-2"
-                onClick={() => handleCopyUrl(editCode, "Edit code copied to clipboard")}
-              >
-                Copy
-              </Button>
+          {editCode && (
+            <div>
+              <Label htmlFor="edit-code" className="flex items-center">
+                <span>Edit Code</span> 
+                <span className="text-sm text-red-500 ml-1">(Save this somewhere safe!)</span>
+              </Label>
+              <div className="flex mt-1.5">
+                <Input
+                  id="edit-code"
+                  value={editCode}
+                  type="password"
+                  readOnly
+                  className="flex-1"
+                />
+                <Button 
+                  className="ml-2"
+                  onClick={() => handleCopyUrl(editCode, "Edit code copied to clipboard")}
+                >
+                  Copy
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                You'll need this code if you want to edit your note later.
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              You'll need this code if you want to edit your note later.
-            </p>
-          </div>
+          )}
         </CardContent>
         <CardFooter className="flex justify-between flex-col sm:flex-row gap-2">
           <Button asChild variant="outline">

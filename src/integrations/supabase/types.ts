@@ -40,7 +40,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
-          edit_code: string
+          edit_code: string | null
           id: string
           is_markdown: boolean | null
           is_public: boolean | null
@@ -52,7 +52,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
-          edit_code: string
+          edit_code?: string | null
           id?: string
           is_markdown?: boolean | null
           is_public?: boolean | null
@@ -64,7 +64,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
-          edit_code?: string
+          edit_code?: string | null
           id?: string
           is_markdown?: boolean | null
           is_public?: boolean | null
