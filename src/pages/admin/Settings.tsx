@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -66,13 +65,10 @@ export default function Settings() {
   const onSubmit = async (data: SmtpSettings) => {
     setIsLoading(true);
     try {
-      // Ensure we're sending smtp_port as a string
+      // Make sure smtp_port is stored as a string in the database
       const { error } = await supabase
         .from('site_settings')
-        .update({
-          ...data,
-          smtp_port: data.smtp_port
-        })
+        .update(data)
         .eq('id', 1);
 
       if (error) throw error;
