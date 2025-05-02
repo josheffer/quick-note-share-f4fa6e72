@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import bcrypt from "bcryptjs";
 import {
   Card,
   CardContent,
@@ -47,8 +47,18 @@ export default function AdminLogin() {
         throw new Error("Credenciais inválidas");
       }
 
-      // Checar senha (na prática, isso deveria ser feito com bcrypt ou similar)
-      if (admin.password !== data.password) {
+      // Verificar se a senha está em formato hash (contém $ indicando formato bcrypt)
+      let isPasswordValid = false;
+      
+      if (admin.password.includes('$')) {
+        // Se for hash, usar bcrypt para comparação
+        isPasswordValid = await bcrypt.compare(data.password, admin.password);
+      } else {
+        // Se for texto puro (legado), fazer comparação direta
+        isPasswordValid = admin.password === data.password;
+      }
+
+      if (!isPasswordValid) {
         throw new Error("Credenciais inválidas");
       }
 

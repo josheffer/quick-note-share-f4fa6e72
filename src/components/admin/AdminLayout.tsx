@@ -13,7 +13,7 @@ import {
   Home,
   Moon,
   Sun,
-  AlertCircle
+  UserCog
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { SidebarTrigger, SidebarProvider } from "@/components/ui/sidebar";
@@ -109,6 +109,14 @@ export default function AdminLayout() {
                           <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/admin/staff')}>
                             <Users className="mr-2 h-4 w-4" />
                             Funcionários
+                          </Button>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/admin/users')}>
+                            <UserCog className="mr-2 h-4 w-4" />
+                            Gerenciar Usuários
                           </Button>
                         </SidebarMenuButton>
                       </SidebarMenuItem>

@@ -47,7 +47,7 @@ export default function Settings() {
           // Load data and ensure smtp_port is treated as a string
           form.reset({
             ...data,
-            smtp_port: data.smtp_port || ''
+            smtp_port: data.smtp_port ? String(data.smtp_port) : ''
           });
         }
       } catch (error: any) {
@@ -71,7 +71,7 @@ export default function Settings() {
         .from('site_settings')
         .update({
           ...data,
-          smtp_port: data.smtp_port
+          smtp_port: String(data.smtp_port)
         })
         .eq('id', 1);
 
