@@ -44,7 +44,7 @@ export default function Settings() {
         if (error) throw error;
         
         if (data) {
-          // Load data directly since the column is text type
+          // Load data and ensure smtp_port is treated as a string
           form.reset({
             ...data,
             smtp_port: data.smtp_port || ''
@@ -66,11 +66,12 @@ export default function Settings() {
   const onSubmit = async (data: SmtpSettings) => {
     setIsLoading(true);
     try {
-      // No need to convert string to number since the column is now text type
+      // Ensure we're sending smtp_port as a string
       const { error } = await supabase
         .from('site_settings')
         .update({
-          ...data
+          ...data,
+          smtp_port: data.smtp_port
         })
         .eq('id', 1);
 
