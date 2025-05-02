@@ -44,7 +44,7 @@ export default function Settings() {
         if (error) throw error;
         
         if (data) {
-          // Load data and ensure smtp_port is treated as a string
+          // Always convert smtp_port to string to match the form field type
           form.reset({
             ...data,
             smtp_port: data.smtp_port ? String(data.smtp_port) : ''
@@ -71,7 +71,7 @@ export default function Settings() {
         .from('site_settings')
         .update({
           ...data,
-          smtp_port: String(data.smtp_port)
+          smtp_port: data.smtp_port
         })
         .eq('id', 1);
 
